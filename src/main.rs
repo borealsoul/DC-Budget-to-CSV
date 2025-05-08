@@ -4,13 +4,19 @@ use std::fs;
 use std::fs::File;
 use std::io::Write;
 
+fn read_file_from_arg(file_path: &String) -> String {
+    fs::read_to_string(file_path).expect("Should have been able to read the file")
+}
+
+fn write_file_from_arg(file_path: &String, text: String) {
+    let mut output = File::create(file_path).unwrap();
+    write!(output, "{}", text).unwrap();
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let file_path = &args[1];
 
-    println!("In file {file_path}");
-
-    let transcript = fs::read_to_string(file_path).expect("Should have been able to read the file");
+    let transcript = read_file_from_arg(&args[1]);
 
     let rg_server_apps = Regex::new(r"(?m)Server\nAPP\n— ([\s\S]*?)\n{2}").unwrap();
     let server_apps_vec = rg_server_apps
@@ -47,7 +53,5 @@ fn main() {
 
     println!("{}", &remove_dates);
 
-    let path = "output.csv";
-    let mut output = File::create(path).unwrap();
-    write!(output, "{}", remove_dates).unwrap();
+    write_file_from_arg(&args[2], remove_dates.to_string());
 }
