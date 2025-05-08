@@ -26,6 +26,10 @@ fn transcript_to_csv(transcript: String) -> String {
         .collect::<Vec<_>>() // Collects it to a vector
         .join("\n"); // Joins every item into a String, divided by line breaks
 
+    if server_app_text.is_empty() {
+        panic!("Error... Is this a budget transcript?")
+    };
+
     // ## REGEX EXPLAINATION ##
     // Captures linebreaks after AM/PM/] and replaces it with a space
     let breaklines_to_space = Regex::new(r"(AM|PM|])(\n)")
@@ -73,6 +77,10 @@ fn transcript_to_csv(transcript: String) -> String {
 
 fn main() {
     let args: Vec<String> = env::args().collect();
+
+    if args.len().ne(&3usize) {
+        panic!("USAGE: budget-to-csv <input> <output>")
+    }
 
     let csv_file = transcript_to_csv(read_file_from_arg(&args[1].to_string()));
 
